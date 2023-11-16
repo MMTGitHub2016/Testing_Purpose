@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Test') {
+            steps {
+                checkout scm
+                sh 'composer install'
+                sh 'php artisan test'
+            }
+        }
+
+        stage('Deploy') {
+            when {
+                expression { env.BRANCH == 'master' }
+            }
+            steps {
+                checkout scm
+                sh 'composer install'
+                sh 'php artisan migrate'
+                sh 'php artisan deploy'
+            }
+        }
+    }
+}
